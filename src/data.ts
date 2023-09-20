@@ -20,12 +20,20 @@ enum ReportType {
 }
 
 data.report.push({
-  id: 'uuid',
+  id: 'uuid1',
   source: 'Salary',
   amount: 7500,
   created_at: new Date(),
   updated_at: new Date(),
   type: ReportType.INCOME,
 });
+data.report.push({
+  id: 'uuid2',
+  source: 'Salary',
+  amount: 7500,
+  created_at: new Date(),
+  updated_at: new Date(),
+  type: ReportType.EXPENSE,
+});
 
-export { data };
+export { data, ReportType };
