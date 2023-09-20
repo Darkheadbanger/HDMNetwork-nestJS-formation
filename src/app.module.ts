@@ -6,5 +6,7 @@ import { AppService } from './app.service';
   imports: [],
   controllers: [AppController],
   providers: [AppService],
+  // Ici, on importe les contrôleurs et les services dans le module
+  // providers est AppService qui continent les logiques méties, pour ensuite les injecter dans les contrôleurs.
 })
 export class AppModule {}

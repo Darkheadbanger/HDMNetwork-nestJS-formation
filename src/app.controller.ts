@@ -3,14 +3,14 @@ import {
   Get,
   Post,
   Put,
-  Delete,
   Param,
   Body,
   HttpCode,
-  NotFoundException,
+  Delete,
+  ParseUUIDPipe,
+  ParseEnumPipe,
 } from '@nestjs/common';
-import { data, ReportType } from './data';
-import { v4 as uuidv4 } from 'uuid';
+import { ReportType } from './data';
 import { AppService } from './app.service';
 
 @Controller('report/:type') // 👈 new start endpoint, @Controller() decorator is used to define the controller
@@ -18,86 +18,55 @@ import { AppService } from './app.service';
 export class AppController {
   constructor(private readonly appService: AppService) {} // 👈 new constructor
 
-  @Get() // 👈 new GET endpoint /report/income by default
   @HttpCode(200) // Ok for Get
-  getAllIncomeReports(@Param('type') type: string): object {
+  @Get() // 👈 new GET endpoint /report/income by default
+  getAllReports(
+    @Param('type', new ParseEnumPipe(ReportType)) type: string,
+  ): object {
     // @Param('type') type: string est un paramètre de type string qui est passé en paramètre de la fonction getAllIncomeReports
     const reportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
-    return this.appService.getAllIncomeReports(reportType);
+    return this.appService.getAllReports(reportType);
   }
 
-  @Get(':id') // 👈 new GET endpoint /report/income/:id
   @HttpCode(200) // Ok for Get
-  getAllIncomeReportsById(
-    @Param('type') type: string,
-    @Param('id') id: string,
+  @Get(':id') // 👈 new GET endpoint /report/income/:id
+  getAllReportsById(
+    @Param('type', new ParseEnumPipe(ReportType)) type: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ): object {
     const reportType: ReportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
-    return data.report.find(
-      (report) => report.type === reportType && report.id === id,
-    );
+    return this.appService.getAllReportsById(reportType, id);
   }
 
-  @Post() // 👈 new POST endpoint /report/income/:id
   @HttpCode(201) // Created for Post
-  createIncomeReport(
+  @Post() // 👈 new POST endpoint /report/income/:id
+  createReport(
     @Body() { amount, source }: { amount: number; source: string },
-    @Param('type') type: string,
+    @Param('type', new ParseEnumPipe(ReportType)) type: string,
   ): object {
-    const newReport = {
-      id: uuidv4(),
-      amount,
-      source,
-      created_at: new Date(),
-      updated_at: new Date(),
-      type: type === 'income' ? ReportType.INCOME : ReportType.EXPENSE,
-    };
+    const reportType =
+      type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
     // Create, toujours utiliser la méthode push pour ajouter un élément dans un tableau/basse de données en JS et utiliserle décorateur @Post() pour créer une nouvelle entrée et utiliser @Body() pour récupérer les données de la requête
-    data.report.push(newReport);
-    return newReport;
+    return this.appService.createReport(reportType, { amount, source });
   }
 
-  @Put(':id') // 👈 new PUT endpoint /report/income/:id
   @HttpCode(200) // Ok for Get
-  updateIncomeReport(
-    @Param('type') type: string,
-    @Param('id') id: string,
+  @Put(':id') // 👈 new PUT endpoint /report/income/:id
+  updateReport(
+    @Param('type', new ParseEnumPipe(ReportType)) type: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() body: { amount: number; source: string },
   ): object {
     const reportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
-    const reportToUpdate = data.report.find(
-      (report) => report.type === reportType && report.id === id,
-    );
-
-    if (!reportToUpdate) {
-      throw new NotFoundException("Report dosen't exist");
-    } else {
-      const reportIndex = data.report.findIndex(
-        (report) => report.id === reportToUpdate.id,
-      );
-
-      data.report[reportIndex] = {
-        ...data.report[reportIndex],
-        ...body,
-      };
-
-      return data.report[reportIndex];
-    }
+    return this.appService.updateReport(reportType, id, body);
   }
-  @Delete(':id')
-  @HttpCode(204)
-  deleteIncomeReport(@Param('id') id: string): void {
-    const reportIndex = data.report.findIndex((report) => report.id === id);
 
-    if (reportIndex === -1) {
-      throw new NotFoundException(`Report with this id ${id} doesn't exist`);
-    } else {
-      data.report.splice(reportIndex, 1);
-      console.log(`Report with id ${id} has been deleted`);
-      return;
-    }
+  // Create snippet for deleteReport
+  @Delete(':id')
+  deleteReport(@Param('id', ParseUUIDPipe) id: string) {
+    return this.appService.deleteReport(id);
   }
 }
