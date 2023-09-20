@@ -11,17 +11,20 @@ import {
 } from '@nestjs/common';
 import { data, ReportType } from './data';
 import { v4 as uuidv4 } from 'uuid';
+import { AppService } from './app.service';
 
 @Controller('report/:type') // 👈 new start endpoint, @Controller() decorator is used to define the controller
 // Ici, :type est un paramètre dynamique qui peut être income ou expense donc pour accéder a cette route la méthode, il faut utiliser le décorteur @Param('type') type: string
 export class AppController {
+  constructor(private readonly appService: AppService) {} // 👈 new constructor
+
   @Get() // 👈 new GET endpoint /report/income by default
   @HttpCode(200) // Ok for Get
   getAllIncomeReports(@Param('type') type: string): object {
     // @Param('type') type: string est un paramètre de type string qui est passé en paramètre de la fonction getAllIncomeReports
     const reportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
-    return data.report.filter((report) => report.type === reportType);
+    return this.appService.getAllIncomeReports(reportType);
   }
 
   @Get(':id') // 👈 new GET endpoint /report/income/:id

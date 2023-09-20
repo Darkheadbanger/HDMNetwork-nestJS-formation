@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { data, ReportType } from './data';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!!';
+  getAllIncomeReports(type: ReportType) {
+    // 👈 new method
+    return data.report.filter((report) => report.type === type);
   }
 }
