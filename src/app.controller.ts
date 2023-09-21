@@ -12,6 +12,8 @@ import {
 } from '@nestjs/common';
 import { ReportType } from './data';
 import { AppService } from './app.service';
+// Import DTOS
+import { CreateReportDto, UpdateReportDto } from './dtos/report.dto';
 
 @Controller('report/:type') // 👈 new start endpoint, @Controller() decorator is used to define the controller
 // Ici, :type est un paramètre dynamique qui peut être income ou expense donc pour accéder a cette route la méthode, il faut utiliser le décorteur @Param('type') type: string
@@ -43,7 +45,7 @@ export class AppController {
   @HttpCode(201) // Created for Post
   @Post() // 👈 new POST endpoint /report/income/:id
   createReport(
-    @Body() { amount, source }: { amount: number; source: string },
+    @Body() { amount, source }: CreateReportDto,
     @Param('type', new ParseEnumPipe(ReportType)) type: string,
   ): object {
     const reportType =
@@ -57,7 +59,7 @@ export class AppController {
   updateReport(
     @Param('type', new ParseEnumPipe(ReportType)) type: string,
     @Param('id', ParseUUIDPipe) id: string,
-    @Body() body: { amount: number; source: string },
+    @Body() body: UpdateReportDto,
   ): object {
     const reportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;

@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { data, ReportType } from './data';
 import { v4 as uuidv4 } from 'uuid';
+import { UpdateReportDto } from './dtos/report.dto';
 
 @Injectable()
 export class AppService {
@@ -31,11 +32,7 @@ export class AppService {
     return newReport;
   }
 
-  updateReport(
-    type: ReportType,
-    id: string,
-    body: { amount: number; source: string },
-  ): object {
+  updateReport(type: ReportType, id: string, body: UpdateReportDto): object {
     const reportToUpdate = data.report.find(
       (report) => report.type === type && report.id === id,
     );
