@@ -10,7 +10,7 @@ import {
   ParseUUIDPipe,
   ParseEnumPipe,
 } from '@nestjs/common';
-import { ReportType } from '../data';
+import { ReportType } from 'src/data';
 
 import { ReportService } from './report.service';
 // Import DTOS
@@ -18,9 +18,9 @@ import {
   CreateReportDto,
   ReportReponseDto,
   UpdateReportDto,
-} from '../dtos/report.dto';
+} from 'src/dtos/report.dto';
 
-@Controller('report')
+@Controller('report/:type')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {} // 👈 new constructor
 
