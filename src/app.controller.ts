@@ -13,7 +13,11 @@ import {
 import { ReportType } from './data';
 import { AppService } from './app.service';
 // Import DTOS
-import { CreateReportDto, UpdateReportDto } from './dtos/report.dto';
+import {
+  CreateReportDto,
+  ReportReponseDto,
+  UpdateReportDto,
+} from './dtos/report.dto';
 
 @Controller('report/:type') // 👈 new start endpoint, @Controller() decorator is used to define the controller
 // Ici, :type est un paramètre dynamique qui peut être income ou expense donc pour accéder a cette route la méthode, il faut utiliser le décorteur @Param('type') type: string
@@ -24,7 +28,7 @@ export class AppController {
   @Get() // 👈 new GET endpoint /report/income by default
   getAllReports(
     @Param('type', new ParseEnumPipe(ReportType)) type: string,
-  ): object {
+  ): ReportReponseDto[] {
     // @Param('type') type: string est un paramètre de type string qui est passé en paramètre de la fonction getAllIncomeReports
     const reportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
@@ -33,13 +37,13 @@ export class AppController {
 
   @HttpCode(200) // Ok for Get
   @Get(':id') // 👈 new GET endpoint /report/income/:id
-  getAllReportsById(
+  getReportsById(
     @Param('type', new ParseEnumPipe(ReportType)) type: string,
     @Param('id', ParseUUIDPipe) id: string,
-  ): object {
+  ): ReportReponseDto {
     const reportType: ReportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
-    return this.appService.getAllReportsById(reportType, id);
+    return this.appService.getReportsById(reportType, id);
   }
 
   @HttpCode(201) // Created for Post
@@ -47,7 +51,7 @@ export class AppController {
   createReport(
     @Body() { amount, source }: CreateReportDto,
     @Param('type', new ParseEnumPipe(ReportType)) type: string,
-  ): object {
+  ): ReportReponseDto {
     const reportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
     // Create, toujours utiliser la méthode push pour ajouter un élément dans un tableau/basse de données en JS et utiliserle décorateur @Post() pour créer une nouvelle entrée et utiliser @Body() pour récupérer les données de la requête
@@ -60,7 +64,7 @@ export class AppController {
     @Param('type', new ParseEnumPipe(ReportType)) type: string,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() body: UpdateReportDto,
-  ): object {
+  ): ReportReponseDto {
     const reportType =
       type === 'income' ? ReportType.INCOME : ReportType.EXPENSE;
     return this.appService.updateReport(reportType, id, body);

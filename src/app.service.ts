@@ -1,25 +1,32 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { data, ReportType } from './data';
 import { v4 as uuidv4 } from 'uuid';
-import { UpdateReportDto } from './dtos/report.dto';
+import { ReportReponseDto, UpdateReportDto } from './dtos/report.dto';
 
 @Injectable()
 export class AppService {
-  getAllReports(type: ReportType): object {
+  getAllReports(type: ReportType): ReportReponseDto[] {
     // 👈 new method
-    return data.report.filter((report) => report.type === type);
+    return data.report
+      .filter((report) => report.type === type)
+      .map((report) => new ReportReponseDto(report));
   }
 
-  getAllReportsById(type: ReportType, id: string): object {
-    return data.report.find(
+  getReportsById(type: ReportType, id: string): ReportReponseDto {
+    const reportById = data.report.find(
       (report) => report.type === type && report.id === id,
     );
+    if (!reportById) {
+      new NotFoundException("Report dosen't exist");
+    } else {
+      return new ReportReponseDto(reportById);
+    }
   }
 
   createReport(
     type: ReportType,
     { amount, source }: { amount: number; source: string },
-  ): object {
+  ): ReportReponseDto {
     const newReport = {
       id: uuidv4(),
       amount,
@@ -29,10 +36,26 @@ export class AppService {
       type,
     };
     data.report.push(newReport);
-    return newReport;
+    return new ReportReponseDto(newReport);
+    // Solution est de faire cela. Mais il existe une autre solution plus simple et plus propre en utilisant le DTO de nestJS
+    // return {
+    //   id: newReport.id,
+    //   amount: newReport.amount,
+    //   source: newReport.source,
+    //   updated_at: newReport.updated_at,
+    //   type: newReport.type,
+    // };
+    // ou
+    // return {
+    //   ...newReport,
+    // };
   }
 
-  updateReport(type: ReportType, id: string, body: UpdateReportDto): object {
+  updateReport(
+    type: ReportType,
+    id: string,
+    body: UpdateReportDto,
+  ): ReportReponseDto {
     const reportToUpdate = data.report.find(
       (report) => report.type === type && report.id === id,
     );
@@ -49,7 +72,7 @@ export class AppService {
         updated_at: new Date(),
       };
 
-      return data.report[reportIndex];
+      return new ReportReponseDto(data.report[reportIndex]);
 
       // 👈 new method
     }
