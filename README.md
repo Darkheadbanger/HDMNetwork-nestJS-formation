@@ -1,3 +1,21 @@
+NestJS is a progressive NodeJS framework that will allow us to build reliable scalable, and maintainable server-side backend applications with incredible ease.
+
+In this course, you will be building two professional applications. The first will be an Expense App, where you will learn:
+
+The fundamentals of NestJS
+Different NestJS entities, like controllers, services, interceptors, pipes, and modules
+NestJS best practices
+In the second project, the Realtor App, we will learn about:
+
+Interacting with a Postgress database with an ORM (Prisma)
+Creating a database model and performing CRUD operations
+How to authenticate and identify a user
+How to authorize certain endpoints for specific users
+How to properly write automated tests for our services and controllers
+How to create custom param decorators
+Learn about advanced NestJS entities like guards and interceptors
+I am very proud of this course and I really hope you take and enjoy it. If you ever need any sort of help, please send me a message on Udemy and I will always answer your questions.
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
